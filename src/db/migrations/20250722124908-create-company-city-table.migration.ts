@@ -6,21 +6,20 @@ import { QueryInterface } from 'sequelize';
 export default {
     async up (queryInterface: QueryInterface) {
         await queryInterface.sequelize.query(`
-        CREATE TABLE employment_types (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          name VARCHAR(20) NOT NULL UNIQUE,
-          description VARCHAR(255) ,
+        CREATE TABLE company_cities (
+          company_id INT NOT NULL,
+          city_id INT NOT NULL,
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          deleted_at DATETIME DEFAULT NULL
+          PRIMARY KEY (company_id, city_id)
         );
-    `);
+      `);
+
     },
 
     async down (queryInterface: QueryInterface) {
         await queryInterface.sequelize.query(`
-          DROP TABLE IF EXISTS employment_types;
+          DROP TABLE IF EXISTS company_cities;
         `);
-
     }
 };
