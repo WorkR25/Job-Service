@@ -9,8 +9,8 @@ export default {
           CREATE TABLE experience_levels (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(255) NOT NULL UNIQUE,
-            minYears INT NOT NULL,
-            maxYears INT NOT NULL,
+            min_years INT NOT NULL,
+            max_years INT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             deleted_at DATETIME DEFAULT NULL
