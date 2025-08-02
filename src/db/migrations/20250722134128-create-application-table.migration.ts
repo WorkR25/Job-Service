@@ -9,7 +9,7 @@ export default {
         id INT AUTO_INCREMENT PRIMARY KEY,
         candidate_id INT NOT NULL,
         job_id INT NOT NULL,
-        applied_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        applied_at DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `);
     },

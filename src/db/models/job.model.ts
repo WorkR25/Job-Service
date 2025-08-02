@@ -1,4 +1,4 @@
-import { CreationOptional,  DataTypes,  ForeignKey,  InferAttributes, InferCreationAttributes, Model } from 'sequelize';
+import { Association, CreationOptional,  DataTypes,  ForeignKey,  InferAttributes, InferCreationAttributes, Model, NonAttribute } from 'sequelize';
 
 import Company from './company.model';
 import EmploymentType from './employmentType.model';
@@ -13,7 +13,7 @@ class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>>{
     declare experience_level_id: ForeignKey<ExperienceLevel['id']>;
     declare salary_min: number;
     declare salary_max: number;
-    declare recuiter_id: CreationOptional<number>;
+    declare recruiter_id: CreationOptional<number>;
     declare company_id: ForeignKey<Company['id']>;
     declare city_id: CreationOptional<number>;
     declare is_remote: boolean;
@@ -21,6 +21,16 @@ class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>>{
     declare created_at: CreationOptional<Date>;
     declare updated_at: CreationOptional<Date>;
     declare deleted_at: CreationOptional<Date | null>;
+
+    declare jobTitle?: NonAttribute<JobTitle>;
+
+    static associations: {
+        jobTitle: Association<Job, JobTitle> ;
+        employmentType: Association<Job, EmploymentType>;
+        experienceLevel: Association<Job, ExperienceLevel>
+        companyId: Association<Job, Company>;
+
+    };
 
 }
 
@@ -65,7 +75,7 @@ Job.init({
         type: DataTypes.DECIMAL(10,2),
         allowNull: false,
     },
-    recuiter_id: {
+    recruiter_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
     },
@@ -90,6 +100,7 @@ Job.init({
     apply_link: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     created_at: {
         type: DataTypes.DATE,
@@ -109,5 +120,29 @@ Job.init({
     underscored: true,
     timestamps: false,
 });
+
+// Job.belongsTo(JobTitle, {
+//     foreignKey: 'title_id',
+//     onDelete: 'CASCADE',
+//     as: 'jobTitle'
+// });
+
+// Job.belongsTo(EmploymentType, {
+//     foreignKey: 'employment_type_id',
+//     onDelete: 'CASCADE',
+//     as: 'employmentType'
+// });
+
+// Job.belongsTo(ExperienceLevel, {
+//     foreignKey: 'experience_level_id',
+//     onDelete: 'CASCADE', 
+//     as: 'experienceLevel'
+// });
+
+// Job.belongsTo(Company, {
+//     foreignKey: 'company_id',
+//     onDelete: 'CASCADE', 
+//     as: 'companyId'
+// });
 
 export default Job;

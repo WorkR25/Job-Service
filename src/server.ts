@@ -1,3 +1,5 @@
+import './db/models/association';
+
 import express from 'express';
 
 import logger from './configs/logger.config';

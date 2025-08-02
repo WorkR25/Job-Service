@@ -13,11 +13,11 @@ export default {
                 experience_level_id INT,
                 salary_min DECIMAL(10, 2) NOT NULL,
                 salary_max DECIMAL(10, 2) NOT NULL,
-                recuiter_id INT,
+                recruiter_id INT,
                 company_id INT,
                 city_id INT,
                 is_remote BOOLEAN NOT NULL DEFAULT FALSE,
-                apply_link VARCHAR(255) NOT NULL,
+                apply_link VARCHAR(255) NOT NULL UNIQUE,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 deleted_at DATETIME DEFAULT NULL
