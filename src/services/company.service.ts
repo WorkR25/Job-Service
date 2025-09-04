@@ -51,7 +51,6 @@ class CompanyService {
             if (checkCompany) {
                 throw new BadRequestError('Company already created');
             }
-            console.log('rest', rest);
             const companyRecord = await this.companyRepository.create({ name, ...rest });
             return { companyRecord };
         } catch (error) {

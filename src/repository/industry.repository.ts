@@ -9,7 +9,6 @@ class IndustryRepository extends BaseRepository<Industry>{
     }
 
     async findAllByName(name: string): Promise<Industry[]> {
-        console.log('record');
         
         const record = await this.model.findAll({
             where: {
@@ -18,7 +17,6 @@ class IndustryRepository extends BaseRepository<Industry>{
                 }
             }
         });
-        console.log('record', record);
         return record ;
     }
 }

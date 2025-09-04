@@ -175,7 +175,6 @@ class JobService {
         await isAuthorized(userId, jwtToken);
         const transaction = await sequelize.transaction();
         try {
-            console.log(rest);
             const jobRecord = await this.jobRepository.create(
                 { ...rest },
                 transaction

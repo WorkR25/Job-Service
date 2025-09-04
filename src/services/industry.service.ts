@@ -1,4 +1,6 @@
+import logger from '../configs/logger.config';
 import IndustryRepository from '../repository/industry.repository';
+import { InternalServerError } from '../utils/errors/app.error';
 import { isAuthorized } from '../utils/services/AuthorizationService';
 
 class IndustryService {
@@ -10,13 +12,12 @@ class IndustryService {
 
     async getAllService(data: {jwtToken: string, userId: number, name: string}){
         try {
-            console.log('data', data);
             await isAuthorized(data.userId, data.jwtToken);
-            console.log('is autho');
             const response = await this.industryRepository.findAllByName(data.name);
             return response ;
         } catch (error) {
-            console.log(error);
+            logger.error(error);
+            throw new InternalServerError('Error fetching all industries');
         }
 
     }
