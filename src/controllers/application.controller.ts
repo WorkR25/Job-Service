@@ -109,10 +109,32 @@ async function getApplicationDetails(req: AuthRequest, res: Response, next: Next
     }
 }
 
+async function getApplicantsByJobIdPagination(req: AuthRequest, res: Response, next: NextFunction){
+    try {
+        const userId = Number( req.user?.id ) ;
+        const jwtToken = String(req.headers.authorization);
+        const jobId = parseInt(req.query.jobId as string);
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        
+        const response = await applicationService.getApplicantsByJobIdPagination({jwtToken, userId, jobId, page, limit});
+
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Applicants fetched successfully',
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
     createApplication,
     deleteApplication,
     getApplicationByUserId,
     getAllApplication,
-    getApplicationDetails
+    getApplicationDetails,
+    getApplicantsByJobIdPagination
 };

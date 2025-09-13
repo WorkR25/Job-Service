@@ -9,9 +9,25 @@ class ApplicationRepository extends BaseRepository<Application> {
         super(Application);
     }
 
+    async findAndCountAll({ jobId, limit, offset }: { jobId: number, limit: number; offset: number }) {
+        const records = await this.model.findAndCountAll({
+            where: {
+                job_id: jobId,
+                deleted_at: {
+                    [Op.eq]: null,
+                },
+            },
+            order: [['applied_at', 'DESC']],
+            limit,
+            offset,
+        });
+
+        return records ;
+    }
+
     async getDetails(where: Partial<Application>) {
         const response = await this.model.findAll({
-            where
+            where,
         });
 
         return response;
