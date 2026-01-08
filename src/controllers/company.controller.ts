@@ -129,7 +129,10 @@ async function deleteCompany(req: AuthRequest, res: Response, next: NextFunction
 async function getAllCompanies(req: AuthRequest, res: Response, next: NextFunction){
     try {    
         const name= String(req.query.name) ;
-        const response = await companyService.getAllCompanies(name);
+        const userId = Number( req.user?.id );
+        const jwtToken = String(req.headers.authorization);
+
+        const response = await companyService.getAllCompanies(name, userId, jwtToken);
         res.status(StatusCodes.OK).json({
             success: true,
             message: 'Details fetched successfully',

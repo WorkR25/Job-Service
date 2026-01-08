@@ -1,7 +1,7 @@
 import logger from '../configs/logger.config';
 import CompanySizeRepository from '../repository/companySize.repository';
 import { InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class CompanySizeService {
     private companySizeRepository: CompanySizeRepository ;
@@ -13,7 +13,8 @@ class CompanySizeService {
     async getAllService(getData : {jwtToken: string, userId: number}){
         try {
             const { jwtToken, userId } = getData ;
-            await isAuthorized( userId, jwtToken );
+            // await isAuthorized( userId, jwtToken );
+            await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin','admin' ] });
 
             const response = await this.companySizeRepository.findAll();
             return response ;

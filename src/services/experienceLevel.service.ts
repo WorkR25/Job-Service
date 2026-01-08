@@ -8,7 +8,7 @@ import {
 } from '../dtos/experienceLevel.dto';
 import ExperienceLevelRepository from '../repository/experienceLevel.repository';
 import { BadRequestError, InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorized, isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class ExperienceLevelService {
     private experienceLevelRepository: ExperienceLevelRepository;
@@ -48,7 +48,9 @@ class ExperienceLevelService {
     async getExperienceLevelService(getData: GetExperienceLevelDto) {
         try {
             const { userId, jwtToken, name } = getData;
-            await isAuthorized(userId, jwtToken);
+            // await isAuthorized(userId, jwtToken);
+            await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+            
             return await this.experienceLevelRepository.getExperienceLevel(name);
         } catch (error) {
             logger.error(error);

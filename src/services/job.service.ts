@@ -16,7 +16,7 @@ import {
     InternalServerError,
     NotFoundError,
 } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 import { getCityById } from '../utils/services/CityService';
 import { getLocationById } from '../utils/services/LocationService';
 import { getSkillById } from '../utils/services/SkillService';
@@ -172,7 +172,9 @@ class JobService {
 
     async createJobService(createJobData: CreateJobDto) {
         const { userId, jwtToken, skillIds, ...rest } = createJobData;
-        await isAuthorized(userId, jwtToken);
+        // await isAuthorized(userId, jwtToken);
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+        
         const transaction = await sequelize.transaction();
         try {
             const jobRecord = await this.jobRepository.create(
@@ -202,7 +204,9 @@ class JobService {
     async deleteJobService(deleteJobData: DeleteJobDto) {
         const { userId, jwtToken, id } = deleteJobData;
 
-        await isAuthorized(userId, jwtToken);
+        // await isAuthorized(userId, jwtToken);
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
@@ -229,7 +233,9 @@ class JobService {
 
     async updateJobService(updateJobData: UpdateJobDto) {
         const { userId, jwtToken, id, skillIds, ...rest } = updateJobData;
-        await isAuthorized(userId, jwtToken);
+        // await isAuthorized(userId, jwtToken);
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {

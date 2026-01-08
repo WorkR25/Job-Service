@@ -7,7 +7,7 @@ import {
 } from '../dtos/employmentType.dto';
 import EmploymentTypeRepository from '../repository/employmentType.repository';
 import { InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorized, isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class EmploymentTypeService {
     private employmentTypeRepository: EmploymentTypeRepository;
@@ -41,7 +41,8 @@ class EmploymentTypeService {
     async getEmploymentType(getData: GetEmploymentType) {
         try {
             const { userId, jwtToken } = getData;
-            await isAuthorized(userId, jwtToken);
+            await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+
             return await this.employmentTypeRepository.findAll();
         } catch (error) {
             logger.error(error);

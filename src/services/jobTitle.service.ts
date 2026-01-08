@@ -7,7 +7,7 @@ import {
 } from '../dtos/jobTitle.dto';
 import JobTitleRepository from '../repository/jobTitle.repository';
 import { BadRequestError, InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorized, isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class JobTitleService {
     private jobTitleRepository: JobTitleRepository;
@@ -18,7 +18,8 @@ class JobTitleService {
 
     async getJobTitleService(getData: GetJobTitleDto) {
         const { userId, jwtToken, title } = getData;
-        await isAuthorized(userId, jwtToken);
+        // await isAuthorized(userId, jwtToken);
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
 
         try {
             const records = await this.jobTitleRepository.getJobTitle(title);
@@ -65,7 +66,9 @@ class JobTitleService {
 
     async createJobTitleService(createData: CreateJobTitleDto) {
         const { title, userId, jwtToken } = createData;
-        await isAuthorized(userId, jwtToken);
+        // await isAuthorized(userId, jwtToken);
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
+
 
         try {
             const checkJobTitle = await this.jobTitleRepository.findByTitle(title);

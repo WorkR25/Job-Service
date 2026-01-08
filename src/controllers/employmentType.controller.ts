@@ -4,7 +4,6 @@ import { StatusCodes } from 'http-status-codes';
 import EmploymentTypeRepository from '../repository/employmentType.repository';
 import EmploymentTypeService from '../services/employmetType.service';
 import { AuthRequest } from '../types/AuthRequest';
-
 const employmentTypeRepository= new EmploymentTypeRepository();
 const employmentTypeService= new EmploymentTypeService(employmentTypeRepository);
 

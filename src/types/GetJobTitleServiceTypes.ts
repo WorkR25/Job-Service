@@ -12,3 +12,10 @@ export type GetRolesResponse = {
     data: Role[];
     error: Record<string, null>;
 };
+
+export type GetRolesResponseGeneric = {
+    success: boolean;
+    message: string;
+    data: string[];
+    error: Record<string, null>;
+};

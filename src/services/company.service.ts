@@ -2,7 +2,7 @@ import logger from '../configs/logger.config';
 import { CreateCompanyDto, DeleteCompanyDto, UpdateCompanyDto } from '../dtos/company.dto';
 import CompanyRepository from '../repository/company.repository';
 import { BadRequestError, InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized } from '../utils/services/AuthorizationService';
+import { isAuthorized, isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class CompanyService {
     private companyRepository: CompanyRepository;
@@ -45,7 +45,8 @@ class CompanyService {
     async createCompany(createData: CreateCompanyDto) {
         try {
             const { userId, jwtToken, name, ...rest } = createData;
-            await isAuthorized(userId, jwtToken);
+            // await isAuthorized(userId, jwtToken);
+            await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
 
             const checkCompany = await this.companyRepository.findByName(name);
             if (checkCompany) {
@@ -61,8 +62,10 @@ class CompanyService {
         }
     }
 
-    async getAllCompanies(name: string) {
+    async getAllCompanies(name: string, userId: number, jwtToken: string) {
         try {
+            await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
+            // await isAuthorized(userId, jwtToken);
             return await this.companyRepository.getCompanyByName(name);
         } catch (error) {
             logger.error(error);
