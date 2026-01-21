@@ -75,36 +75,35 @@ class JobService {
             // return true ;
             const offset = (page - 1) * limit;
 
-            const { rows: jobs, count: totalCount } =
-                await this.jobRepository.findAndCountAll({ limit, offset });
+            const { rows: jobs, count: totalCount } = await this.jobRepository.findAndCountAll({ limit, offset });
+            
             const response = await Promise.all(
                 jobs.map(async (job) => {
-                    const location = await getLocationById(job.city_id);
-                    const skillIds = await this.jobSkillRepository.findSkillByJobId(
-                        job.id
-                    );
+                    const locationRes = await getLocationById(job.city_id);
+                    const location = locationRes?.data?.data;
 
-                    if (skillIds.length === 0) {
-                        return {
-                            ...job.get({ plain: true }),
-                            city: location.data.data.name,
-                            state: location.data.data.state.name,
-                            country: location.data.data.state.country.name,
-                        };
+                    const city = location?.name ?? null;
+                    const state = location?.state?.name ?? null;
+                    const country = location?.state?.country?.name ?? null;
+
+                    const skillIds = await this.jobSkillRepository.findSkillByJobId(job.id);
+
+                    let skills: string[] = [];
+
+                    if (skillIds.length > 0) {
+                        skills = await Promise.all(
+                            skillIds.map(async (skillId) => {
+                                const skillRes = await getSkillById(skillId.skill_id);
+                                return skillRes?.data?.data?.name ?? null;
+                            })
+                        );
                     }
-
-                    const skills = await Promise.all(
-                        skillIds.map(async (skillId) => {
-                            const skill = await getSkillById(skillId.skill_id);
-                            return skill.data.data.name;
-                        })
-                    );
 
                     return {
                         ...job.get({ plain: true }),
-                        city: location.data.data.name,
-                        state: location.data.data.state.name,
-                        country: location.data.data.state.country.name,
+                        city,
+                        state,
+                        country,
                         skills,
                     };
                 })
