@@ -157,7 +157,7 @@ class JobRepository extends BaseRepository<Job> {
                 },
                 {
                     association: Job.associations.company,
-                    attributes: ['name', 'logo', 'description'],
+                    attributes: ['name', 'logo', 'description', 'website'],
                     include: [
                         {
                             association: Company.associations.companySize,
