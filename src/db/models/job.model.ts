@@ -16,7 +16,6 @@ class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>>{
     declare recruiter_id: CreationOptional<number>;
     declare company_id: ForeignKey<Company['id']>;
     declare city_id: CreationOptional<number>;
-    declare is_remote: boolean;
     declare apply_link: string;
     declare description: CreationOptional<string>;
     declare created_at: CreationOptional<Date>;
@@ -91,11 +90,6 @@ Job.init({
     city_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
-    },
-    is_remote: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
     },
     apply_link: {
         type: DataTypes.STRING,

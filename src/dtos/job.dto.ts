@@ -18,7 +18,6 @@ export type GetAllJobByQueryDto={
     recuiter_id?: number;
     company_id?: number;
     city_id?: number;
-    is_remote?: boolean;
     apply_link?: string;
 }
 
@@ -33,7 +32,6 @@ export type CreateJobDto= {
     recruiter_id: number;
     company_id: number;
     city_id: number;
-    is_remote: boolean;
     apply_link: string;
     skillIds: number[];
 }
@@ -56,7 +54,6 @@ export type UpdateJobDto= {
     recuiter_id?: number;
     company_id?: number;
     city_id?: number;
-    is_remote?: boolean;
     apply_link?: string;
     skillIds: number[];
 }

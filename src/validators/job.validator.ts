@@ -10,7 +10,6 @@ export const GetJobByQuerySchema = z.object({
     recruiter_id: z.string().regex(/^\d+$/, 'Recruiter ID must be a valid number').optional(),
     company_id: z.string().regex(/^\d+$/, 'Company ID must be a valid number').optional(),
     city_id: z.string().regex(/^\d+$/, 'City ID must be a valid number').optional(),
-    is_remote: z.enum(['true', 'false']).optional(),
     apply_link: z.string().url('Apply link must be a valid URL').optional(),
 }).strict();
 
@@ -23,7 +22,6 @@ export const CreateJobSchema = z.object({
     recruiter_id: z.number({ required_error: 'Recruiter ID is required' }),
     company_id: z.number({ required_error: 'Company ID is required' }),
     city_id: z.number({ required_error: 'City ID is required' }),
-    is_remote: z.boolean({ required_error: 'Remote status is required' }),
     apply_link: z.string({ required_error: 'Apply link is required' }).url('Apply link must be a valid URL'),
     skillIds: z.array(z.number({required_error: 'Skill Ids must be a number '}))
 });
@@ -43,6 +41,5 @@ export const UpdateJobSchema = z.object({
     recruiter_id: z.number().optional(),
     company_id: z.number().optional(),
     city_id: z.number().optional(),
-    is_remote: z.boolean().optional(),
     apply_link: z.string().optional(),
 });
