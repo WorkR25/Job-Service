@@ -74,8 +74,7 @@ class JobRepository extends BaseRepository<Job> {
         const records = await this.model.findAndCountAll({
             attributes: [
                 'created_at',
-                'is_remote',
-                'city_id',
+                'location_id',
                 'id',
                 'salary_min',
                 'salary_max',
@@ -109,8 +108,7 @@ class JobRepository extends BaseRepository<Job> {
         const records = await this.model.findAll({
             attributes: [
                 'created_at',
-                'is_remote',
-                'city_id',
+                'location_id',
                 'id',
                 'salary_min',
                 'salary_max',
@@ -141,7 +139,6 @@ class JobRepository extends BaseRepository<Job> {
             attributes: [
                 'salary_min',
                 'salary_max',
-                'is_remote',
                 'apply_link',
                 'created_at',
                 'description',
