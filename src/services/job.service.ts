@@ -45,6 +45,10 @@ class JobService {
                 throw new NotFoundError('Job not found');
             }
 
+            if(checkJob.deleted_at != null) {
+                throw new BadRequestError('This Job is no longer exists');
+            }
+
             const city = await getCityById(checkJob.location_id);
             const data = await this.jobRepository.getJobDetails(Number(id));
             const skillIds = await this.jobSkillRepository.findSkillByJobId(id);
