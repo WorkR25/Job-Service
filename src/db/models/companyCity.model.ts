@@ -11,7 +11,7 @@ import sequelize from './sequelize';
 class CompanyCity extends Model<InferAttributes<CompanyCity>,InferCreationAttributes<CompanyCity>> {
     declare id: CreationOptional<number>;
     declare company_id: number;
-    declare city_id: number;
+    declare location_id: number;
     declare created_at: CreationOptional<Date>;
     declare updated_at: CreationOptional<Date>;
 }
@@ -27,7 +27,7 @@ CompanyCity.init(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        city_id: {
+        location_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },

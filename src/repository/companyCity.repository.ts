@@ -11,8 +11,8 @@ class CompanyCityRepository extends BaseRepository<CompanyCity>{
         super(CompanyCity);
     }
 
-    async findByCompanyId(company_id: number, city_id: number){
-        return await this.model.findOne({where:{company_id, city_id}});
+    async findByCompanyId(company_id: number, location_id: number){
+        return await this.model.findOne({where:{company_id, location_id}});
     }
 
     async create(data: Optional<InferCreationAttributes<CompanyCity, { omit: never; }>, NullishPropertiesOf<InferCreationAttributes<CompanyCity, { omit: never; }>>>, transaction?: Transaction): Promise<CompanyCity> {

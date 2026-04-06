@@ -15,7 +15,7 @@ class Job extends Model<InferAttributes<Job>, InferCreationAttributes<Job>>{
     declare salary_max: number;
     declare recruiter_id: CreationOptional<number>;
     declare company_id: ForeignKey<Company['id']>;
-    declare city_id: CreationOptional<number>;
+    declare location_id: CreationOptional<number>;
     declare apply_link: string;
     declare description: CreationOptional<string>;
     declare created_at: CreationOptional<Date>;
@@ -87,7 +87,7 @@ Job.init({
         },
         onDelete: 'CASCADE'
     },
-    city_id: {
+    location_id: {
         type: DataTypes.INTEGER,
         allowNull: true,
     },

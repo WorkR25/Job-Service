@@ -74,7 +74,7 @@ class JobRepository extends BaseRepository<Job> {
         const records = await this.model.findAndCountAll({
             attributes: [
                 'created_at',
-                'city_id',
+                'location_id',
                 'id',
                 'salary_min',
                 'salary_max',
@@ -108,7 +108,7 @@ class JobRepository extends BaseRepository<Job> {
         const records = await this.model.findAll({
             attributes: [
                 'created_at',
-                'city_id',
+                'location_id',
                 'id',
                 'salary_min',
                 'salary_max',

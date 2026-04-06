@@ -45,7 +45,7 @@ class JobService {
                 throw new NotFoundError('Job not found');
             }
 
-            const city = await getCityById(checkJob.city_id);
+            const city = await getCityById(checkJob.location_id);
             const data = await this.jobRepository.getJobDetails(Number(id));
             const skillIds = await this.jobSkillRepository.findSkillByJobId(id);
 
@@ -76,10 +76,9 @@ class JobService {
             const offset = (page - 1) * limit;
 
             const { rows: jobs, count: totalCount } = await this.jobRepository.findAndCountAll({ limit, offset });
-            
             const response = await Promise.all(
                 jobs.map(async (job) => {
-                    const locationRes = await getLocationById(job.city_id);
+                    const locationRes = await getLocationById(job.location_id);
                     const location = locationRes?.data?.data;
 
                     const city = location?.name ?? null;
@@ -131,7 +130,7 @@ class JobService {
             const record = await this.jobRepository.findAll();
             const response = await Promise.all(
                 record.map(async (job) => {
-                    const location = await getLocationById(job.city_id);
+                    const location = await getLocationById(job.location_id);
                     const skillIds = await this.jobSkillRepository.findSkillByJobId(
                         job.id
                     );
@@ -188,7 +187,7 @@ class JobService {
                 transaction
             );
             await this.companyCityRepository.create(
-                { company_id: jobRecord.company_id, city_id: jobRecord.city_id },
+                { company_id: jobRecord.company_id, location_id: jobRecord.location_id },
                 transaction
             );
             await transaction.commit();
@@ -218,7 +217,7 @@ class JobService {
             await this.jobSkillRepository.delete({ job_id: id }, transaction);
             await this.jobRepository.softDelete({ id }, transaction);
             await this.companyCityRepository.delete(
-                { city_id: checkJob.city_id, company_id: checkJob.company_id },
+                { location_id: checkJob.location_id, company_id: checkJob.company_id },
                 transaction
             );
             await transaction.commit();
