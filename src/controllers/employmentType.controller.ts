@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import EmploymentTypeRepository from '../repository/employmentType.repository';
 import EmploymentTypeService from '../services/employmetType.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -27,6 +28,7 @@ async function createEmploymentTypeController(req: AuthRequest, res: Response, n
             error: {}
         });
     } catch (error) {
+        logger.error('employmentType.controller/createEmploymentTypeController', error);
         next(error);
     }
 }
@@ -49,6 +51,7 @@ async function getEmploymentTypeController(req: AuthRequest, res: Response, next
         });
 
     } catch (error) {
+        logger.error('employmentType.controller/getEmploymentTypeController', error);
         next(error);
     }
 }
@@ -72,6 +75,7 @@ async function deleteEmploymentTypeController(req: AuthRequest, res: Response, n
             error: {}
         });
     } catch (error) {
+        logger.error('employmentType.controller/deleteEmploymentTypeController', error);
         next(error);
     }
 }
@@ -97,6 +101,7 @@ async function updateEmploymentTypeController(req: AuthRequest, res: Response, n
             error: {}
         });
     } catch (error) {
+        logger.error('employmentType.controller/updateEmploymentTypeController', error);
         next(error);
     }
 }

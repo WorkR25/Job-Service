@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import IndustryRepository from '../repository/industry.repository';
 import IndustryService from '../services/industry.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -22,6 +23,7 @@ async function getAllIndustries(req: AuthRequest, res: Response, next: NextFunct
             error: {}
         });
     } catch (error) {
+        logger.error('industry.controller/getAllIndustries', error);
         next(error);
     }
 }

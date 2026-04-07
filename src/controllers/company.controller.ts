@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import CompanyRepository from '../repository/company.repository';
 import CompanyService from '../services/company.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -26,6 +27,7 @@ async function uploadLogoHandler(req: Request, res: Response, next: NextFunction
             error: {}
         });
     } catch (error) {
+        logger.error('company.controller/uploadLogoHandler',error);
         next(error);
     }
 }
@@ -41,6 +43,7 @@ async function getCompanyDetailsById(req: Request, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
+        logger.error('company.controller/getCompanyDetailsById', error);
         next(error);
     }
 }
@@ -71,6 +74,7 @@ async function createComapany(req: AuthRequest, res: Response, next: NextFunctio
             error: {}
         });
     } catch (error) {
+        logger.error('company.controller/createComapany', error);
         next(error);
     }
 
@@ -122,6 +126,7 @@ async function deleteCompany(req: AuthRequest, res: Response, next: NextFunction
             error: {}
         });
     } catch (error) {
+        logger.error('company.controller/deleteCompany', error);
         next(error);
     }
 }
@@ -140,11 +145,29 @@ async function getAllCompanies(req: AuthRequest, res: Response, next: NextFuncti
             error: {}
         });
     } catch (error) {
+        logger.error('company.controller/getAllCompanies', error);
+        next(error);
+    }
+}
+
+async function findCompanyByName(req: AuthRequest, res: Response, next: NextFunction){
+    try {    
+        const name= String(req.query.name) ;
+        const response = await companyService.findCompanyByNameService({ name });
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Details fetched successfully',
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        logger.error('company.controller/findCompanyByName', error);
         next(error);
     }
 }
 
 export default {
+    findCompanyByName,
     uploadLogoHandler,
     getCompanyDetailsById,
     createComapany,

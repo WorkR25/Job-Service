@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import JobTitleRepository from '../repository/jobTitle.repository';
 import JobTitleService from '../services/jobTitle.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -39,6 +40,7 @@ async function getJobTitle(req: AuthRequest, res: Response, next: NextFunction){
             error: {}
         });
     } catch (error) {
+        logger.error('jobTitle.controller/getJobTitle', error);
         next(error);
     }
 };
@@ -63,6 +65,7 @@ async function deleteJobTitle(req: AuthRequest, res: Response, next: NextFunctio
             error: {}
         });
     } catch (error) {
+        logger.error('jobTitle.controller/deleteJobTitle', error);
         next(error);
     }
 }
@@ -87,6 +90,7 @@ async function updateJobTitle(req: AuthRequest, res: Response, next: NextFunctio
             error: {}
         });
     } catch (error) {
+        logger.error('jobTitle.controller/updateJobTitle', error);
         next(error);
     }
 }
@@ -111,6 +115,7 @@ async function createJobTitle(req: AuthRequest, res: Response, next: NextFunctio
             error: {}
         });
     }catch(error){
+        logger.error('jobTitle.controller/createJobTitle', error);
         next(error);
     }
 }

@@ -9,7 +9,9 @@ import { createCompanySchema, deleteCompanySchema, updateCompanySchema } from '.
 const comapanyRouter = Router();
 
 comapanyRouter.post('/upload-logo', authenticationMiddleware, upload.single('file'), companyController.uploadLogoHandler);
+comapanyRouter.get('/find-companies', authenticationMiddleware, companyController.findCompanyByName);
 comapanyRouter.get('/:id', authenticationMiddleware, companyController.getCompanyDetailsById);
+
 comapanyRouter.get('/', authenticationMiddleware, companyController.getAllCompanies);
 comapanyRouter.post('/', authenticationMiddleware, validateRequestBody(createCompanySchema), companyController.createComapany);
 comapanyRouter.put('/', authenticationMiddleware, validateRequestBody(updateCompanySchema),companyController.updateCompany);

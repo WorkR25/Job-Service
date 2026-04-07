@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import ApplicationRepository from '../repository/application.repository';
 import ApplicationService from '../services/application.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -34,6 +35,7 @@ async function createApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/createApplication', error);
         next(error);
     }
 }
@@ -53,6 +55,7 @@ async function deleteApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/deleteApplication', error);
         next(error);
     }
 }
@@ -68,6 +71,7 @@ async function getApplicationByUserId(req: AuthRequest, res: Response, next: Nex
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/getApplicationByUserId', error);
         next(error);
     }
 }
@@ -87,6 +91,7 @@ async function getAllApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/getAllApplication', error);
         next(error);
     }
 }
@@ -105,6 +110,7 @@ async function getApplicationDetails(req: AuthRequest, res: Response, next: Next
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/getApplicationDetails', error);
         next(error);
     }
 }
@@ -126,6 +132,7 @@ async function getApplicantsByJobIdPagination(req: AuthRequest, res: Response, n
             error: {}
         });
     } catch (error) {
+        logger.error('application.controller/getApplicantsByJobIdPagination', error);
         next(error);
     }
 }

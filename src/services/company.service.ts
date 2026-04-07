@@ -1,8 +1,7 @@
-import logger from '../configs/logger.config';
 import { CreateCompanyDto, DeleteCompanyDto, UpdateCompanyDto } from '../dtos/company.dto';
 import CompanyRepository from '../repository/company.repository';
-import { BadRequestError, InternalServerError } from '../utils/errors/app.error';
-import { isAuthorized, isAuthorizedGeneric } from '../utils/services/AuthorizationService';
+import { BadRequestError } from '../utils/errors/app.error';
+import { isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class CompanyService {
     private companyRepository: CompanyRepository;
@@ -11,66 +10,42 @@ class CompanyService {
         this.companyRepository = companyRepository;
     }
 
+    async findCompanyByNameService({name} : {name: string}){
+        const response = await this.companyRepository.findByName(name);
+        return response;
+    }
+
     async getCompanyDetailsById(id: number) {
-        try {
-            return await this.companyRepository.findById(id);
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error fetching company details');
-        }
+        return await this.companyRepository.findById(id);
     }
 
     async deleteCompany(deleteData: DeleteCompanyDto) {
-        try {
-            const { userId, jwtToken, id } = deleteData;
-            await isAuthorized(userId, jwtToken);
-            return await this.companyRepository.delete({ id });
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error deleting company');
-        }
+        const { userId, jwtToken, id } = deleteData;
+        await isAuthorizedGeneric({userId, jwtToken, allowedRoles: ['operations_admin', 'admin']});
+        return await this.companyRepository.delete({ id });
     }
 
     async updateCompanyService(updateData: UpdateCompanyDto) {
-        try {
-            const { userId, jwtToken, id, ...rest } = updateData;
-            await isAuthorized(userId, jwtToken);
-            return await this.companyRepository.updateById(id, { ...rest });
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error updating company');
-        }
+        const { userId, jwtToken, id, ...rest } = updateData;
+        await isAuthorizedGeneric({userId, jwtToken, allowedRoles: ['operations_admin', 'admin']});
+        return await this.companyRepository.updateById(id, { ...rest });
     }
 
     async createCompany(createData: CreateCompanyDto) {
-        try {
-            const { userId, jwtToken, name, ...rest } = createData;
-            // await isAuthorized(userId, jwtToken);
-            await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
+        const { userId, jwtToken, name, ...rest } = createData;
+        await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
 
-            const checkCompany = await this.companyRepository.findByName(name);
-            if (checkCompany) {
-                throw new BadRequestError('Company already created');
-            }
-            const companyRecord = await this.companyRepository.create({ name, ...rest });
-            return { companyRecord };
-        } catch (error) {
-            logger.error(error);
-            // if it's already a BadRequestError, rethrow to preserve it
-            if (error instanceof BadRequestError) throw error;
-            throw new InternalServerError('Error creating company');
+        const checkCompany = await this.companyRepository.findByName(name);
+        if (checkCompany) {
+            throw new BadRequestError('Company already exists');
         }
+        const companyRecord = await this.companyRepository.create({ name, ...rest });
+        return { companyRecord };
     }
 
     async getAllCompanies(name: string, userId: number, jwtToken: string) {
-        try {
-            await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
-            // await isAuthorized(userId, jwtToken);
-            return await this.companyRepository.getCompanyByName(name);
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error fetching all companies');
-        }
+        await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
+        return await this.companyRepository.getCompanyByName(name);
     }
 }
 
