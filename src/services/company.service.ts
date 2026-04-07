@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import { CreateCompanyDto, DeleteCompanyDto, UpdateCompanyDto } from '../dtos/company.dto';
 import CompanyRepository from '../repository/company.repository';
 import { BadRequestError } from '../utils/errors/app.error';
@@ -37,7 +38,9 @@ class CompanyService {
 
         const checkCompany = await this.companyRepository.findByName(name);
         if (checkCompany) {
-            throw new BadRequestError('Company already exists');
+            const error = new BadRequestError('Company already exists');
+            logger.error('company.service/createCompany', { error, name });
+            throw error;
         }
         const companyRecord = await this.companyRepository.create({ name, ...rest });
         return { companyRecord };

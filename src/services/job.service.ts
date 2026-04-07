@@ -41,11 +41,15 @@ class JobService {
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
-            throw new NotFoundError('Job not found');
+            const error = new NotFoundError('Job not found');
+            logger.error('job.service/getJobDetailsById', { error, id });
+            throw error;
         }
 
         if(checkJob.deleted_at != null) {
-            throw new BadRequestError('This Job is no longer exists');
+            const error = new BadRequestError('This Job is no longer exists');
+            logger.error('job.service/getJobDetailsById', { error, id });
+            throw error;
         }
 
         const city = await getCityById(checkJob.location_id);
@@ -194,7 +198,9 @@ class JobService {
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
-            throw new BadRequestError('Job does not exist');
+            const error = new BadRequestError('Job does not exist');
+            logger.error('job.service/deleteJobService', { error, id });
+            throw error;
         }
 
         const transaction = await sequelize.transaction();
@@ -221,7 +227,9 @@ class JobService {
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
-            throw new BadRequestError('Job does not exist');
+            const error = new BadRequestError('Job does not exist');
+            logger.error('job.service/updateJobService', { error, id });
+            throw error;
         }
 
         const skillIdResponse = await this.jobSkillRepository.findSkillByJobId(
@@ -261,8 +269,8 @@ class JobService {
                 skillIds,
             };
         } catch (error) {
-            logger.error(error);
             await transaction.rollback();
+            logger.error(error);
             throw new InternalServerError('Error updating job details');
         }
     }

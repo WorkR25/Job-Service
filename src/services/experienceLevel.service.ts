@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import { 
     CreateExperienceLevelDto, 
     DeleteExperienceLevelDto, 
@@ -22,7 +23,9 @@ class ExperienceLevelService {
 
         const checkExperience = await this.experienceLevelRepository.findByName(name);
         if (checkExperience) {
-            throw new BadRequestError('Experience level already exists');
+            const error = new BadRequestError('Experience level already exists');
+            logger.error('experienceLevel.service/createExperinceLevelService', { error, name });
+            throw error;
         }
 
         return await this.experienceLevelRepository.create({ name, minYears, maxYears });
@@ -47,7 +50,9 @@ class ExperienceLevelService {
 
         const checkExperience = await this.experienceLevelRepository.findById(id);
         if (!checkExperience) {
-            throw new BadRequestError('Experience level does not exist');
+            const error = new BadRequestError('Experience level does not exist');
+            logger.error('experienceLevel.service/updateExperienceLevelService', { error, id });
+            throw error;
         }
 
         return await this.experienceLevelRepository.updateById(id, { name, minYears, maxYears });
@@ -59,7 +64,9 @@ class ExperienceLevelService {
 
         const checkExperience = await this.experienceLevelRepository.findById(id);
         if (!checkExperience) {
-            throw new BadRequestError('Experience level does not exist');
+            const error = new BadRequestError('Experience level does not exist');
+            logger.error('experienceLevel.service/deleteExperienceLevelService', { error, id });
+            throw error;
         }
 
         return await this.experienceLevelRepository.delete({ id });

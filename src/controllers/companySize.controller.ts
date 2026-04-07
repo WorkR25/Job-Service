@@ -1,7 +1,6 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import logger from '../configs/logger.config';
 import CompanySizeRepository from '../repository/companySize.repository';
 import CompanySizeService from '../services/companySize.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -22,7 +21,6 @@ async function getAllCompanySizes(req: AuthRequest, res: Response, next: NextFun
         });
 
     } catch (error) {
-        logger.error('companySize.controller/getAllCompanySizes', error);
         next(error);
     }
 }

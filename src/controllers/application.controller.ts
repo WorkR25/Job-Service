@@ -1,12 +1,10 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import logger from '../configs/logger.config';
 import ApplicationRepository from '../repository/application.repository';
 import ApplicationService from '../services/application.service';
 import { AuthRequest } from '../types/AuthRequest';
 import { isAuthorized } from '../utils/services/AuthorizationService';
-// import { isAuthorized } from '../utils/services/AuthorizationService';
 
 const applicationRepository= new ApplicationRepository();
 const applicationService= new ApplicationService(applicationRepository);
@@ -17,16 +15,6 @@ async function createApplication(req: AuthRequest, res: Response, next: NextFunc
         const { jobId } = req.body;
         const jwtToken= String(req.headers.authorization);
 
-        // const record= await applicationService.getApplicationDetailsService({userId, jobId, jwtToken});
-        // if(record.length> 0){
-        //     res.status(StatusCodes.OK).json({
-        //         success: true,
-        //         message: 'Already applied for this Job',
-        //         data: record,
-        //         error: {}
-        //     });
-        // }
-        
         const response= await applicationService.createApplicationService({userId, jobId: Number(jobId), jwtToken});
         res.status(StatusCodes.OK).json({
             success: true,
@@ -35,7 +23,6 @@ async function createApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/createApplication', error);
         next(error);
     }
 }
@@ -46,7 +33,6 @@ async function deleteApplication(req: AuthRequest, res: Response, next: NextFunc
         const jobId= Number(req.params.id);
         const jwtToken= String(req.headers.authorization);
 
-
         const response= await applicationService.deleteApplicationService({userId, jobId, jwtToken});
         res.status(StatusCodes.OK).json({
             success: true,
@@ -55,7 +41,6 @@ async function deleteApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/deleteApplication', error);
         next(error);
     }
 }
@@ -71,7 +56,6 @@ async function getApplicationByUserId(req: AuthRequest, res: Response, next: Nex
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/getApplicationByUserId', error);
         next(error);
     }
 }
@@ -91,7 +75,6 @@ async function getAllApplication(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/getAllApplication', error);
         next(error);
     }
 }
@@ -110,7 +93,6 @@ async function getApplicationDetails(req: AuthRequest, res: Response, next: Next
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/getApplicationDetails', error);
         next(error);
     }
 }
@@ -132,7 +114,6 @@ async function getApplicantsByJobIdPagination(req: AuthRequest, res: Response, n
             error: {}
         });
     } catch (error) {
-        logger.error('application.controller/getApplicantsByJobIdPagination', error);
         next(error);
     }
 }

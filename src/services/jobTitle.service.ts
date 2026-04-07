@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import { 
     CreateJobTitleDto, 
     DeleteJobTitleDto, 
@@ -29,7 +30,9 @@ class JobTitleService {
 
         const checkJobTitle = await this.jobTitleRepository.findById(id);
         if (!checkJobTitle) {
-            throw new BadRequestError('Job title does not exist');
+            const error = new BadRequestError('Job title does not exist');
+            logger.error('jobTitle.service/delJobTitleService', { error, id });
+            throw error;
         }
 
         return await this.jobTitleRepository.delete({ id });
@@ -41,7 +44,9 @@ class JobTitleService {
 
         const checkJobTitle = await this.jobTitleRepository.findById(id);
         if (!checkJobTitle) {
-            throw new BadRequestError('Job title does not exist');
+            const error = new BadRequestError('Job title does not exist');
+            logger.error('jobTitle.service/updateJobTitleService', { error, id });
+            throw error;
         }
 
         return await this.jobTitleRepository.updateById(id, { title });
@@ -53,7 +58,9 @@ class JobTitleService {
 
         const checkJobTitle = await this.jobTitleRepository.findByTitle(title);
         if (checkJobTitle) {
-            throw new BadRequestError('Job title already exists');
+            const error = new BadRequestError('Job title already exists');
+            logger.error('jobTitle.service/createJobTitleService', { error, title });
+            throw error;
         }
 
         return await this.jobTitleRepository.create({ title });

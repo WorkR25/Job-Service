@@ -1,7 +1,6 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import logger from '../configs/logger.config';
 import CompanyCityRepository from '../repository/companyCity.repository';
 import JobRepository from '../repository/job.repository';
 import JobSkillRepository from '../repository/jobSkill.repository';
@@ -29,7 +28,6 @@ async function getJobDetailsById(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('job.controller/getJobDetailsById', error);
         next(error);
     }
 }
@@ -52,7 +50,6 @@ async function getAllJobs(req: AuthRequest, res: Response, next: NextFunction){
             error: {}
         });
     } catch (error) {
-        logger.error('job.controller/getAllJobs', error);
         next(error);
     }
 }
@@ -78,7 +75,6 @@ async function createJob(req: AuthRequest, res: Response, next: NextFunction){
         });
 
     } catch (error) {
-        logger.error('job.controller/createJob', error);
         next(error);
     }
 }
@@ -102,7 +98,6 @@ async function deleteJob(req: AuthRequest, res: Response, next: NextFunction){
             error: {}
         });
     } catch (error) {
-        logger.error('job.controller/deleteJob', error);
         next(error);
     }
 }
@@ -127,7 +122,6 @@ async function updateJob(req: AuthRequest, res: Response, next: NextFunction){
             error: {}
         });
     } catch (error) {
-        logger.error('job.controller/updateJob', error);
         next(error);
     }
 
@@ -147,7 +141,6 @@ async function getAllJobsPagination(req: AuthRequest, res: Response, next: NextF
             error: {}
         });
     } catch (error) {
-        logger.error('job.controller/getAllJobsPagination', error);
         next(error);
     }
 }

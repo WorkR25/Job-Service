@@ -1,3 +1,4 @@
+import logger from '../configs/logger.config';
 import {
     CreateApplicationDto,
     DeleteApplicationDto,
@@ -24,7 +25,9 @@ class ApplicationService {
             job_id: jobId,
         });
         if (record) {
-            throw new BadRequestError('You have already applied for this job');
+            const error = new BadRequestError('You have already applied for this job');
+            logger.error('application.service/createApplicationService', { error, userId, jobId });
+            throw error;
         }
 
         return await this.applicationRepository.create({

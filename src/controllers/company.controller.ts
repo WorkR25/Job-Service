@@ -13,7 +13,9 @@ const companyService = new CompanyService(companyRepository);
 async function uploadLogoHandler(req: Request, res: Response, next: NextFunction){
     try {
         if(!req.file){
-            throw new BadRequestError('No profile pic');
+            const error = new BadRequestError('No profile pic');
+            logger.error('company.controller/uploadLogoHandler', { error });
+            throw error;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const fileUrl = (req.file as any).location;
@@ -27,7 +29,6 @@ async function uploadLogoHandler(req: Request, res: Response, next: NextFunction
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/uploadLogoHandler',error);
         next(error);
     }
 }
@@ -43,7 +44,6 @@ async function getCompanyDetailsById(req: Request, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/getCompanyDetailsById', error);
         next(error);
     }
 }
@@ -74,7 +74,6 @@ async function createComapany(req: AuthRequest, res: Response, next: NextFunctio
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/createComapany', error);
         next(error);
     }
 
@@ -126,7 +125,6 @@ async function deleteCompany(req: AuthRequest, res: Response, next: NextFunction
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/deleteCompany', error);
         next(error);
     }
 }
@@ -145,7 +143,6 @@ async function getAllCompanies(req: AuthRequest, res: Response, next: NextFuncti
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/getAllCompanies', error);
         next(error);
     }
 }
@@ -161,7 +158,6 @@ async function findCompanyByName(req: AuthRequest, res: Response, next: NextFunc
             error: {}
         });
     } catch (error) {
-        logger.error('company.controller/findCompanyByName', error);
         next(error);
     }
 }

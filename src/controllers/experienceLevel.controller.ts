@@ -1,7 +1,6 @@
 import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import logger from '../configs/logger.config';
 import ExperienceLevelRepository from '../repository/experienceLevel.repository';
 import ExperienceLevelService from '../services/experienceLevel.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -32,7 +31,6 @@ async function createExperienceLevelController(req: AuthRequest, res: Response, 
             error: {}
         });
     } catch (error) {
-        logger.error('experienceLevel.controller/createExperienceLevelController', error);
         next(error);
     }
 }
@@ -58,7 +56,6 @@ async function findByIdExperienceLevelController(req: AuthRequest, res: Response
             error: {}
         });
     } catch (error) {
-        logger.error('experienceLevel.controller/findByIdExperienceLevelController', error);
         next(error);
     }
 }
@@ -83,7 +80,6 @@ async function findExperienceLevelController(req: AuthRequest, res: Response, ne
             error: {}
         });
     } catch (error) {
-        logger.error('experienceLevel.controller/findExperienceLevelController', error);
         next(error);
     }
 }
@@ -112,7 +108,6 @@ async function updateExperienceLevelController(req: AuthRequest, res: Response, 
             error: {}
         });
     } catch (error) {
-        logger.error('experienceLevel.controller/updateExperienceLevelController', error);
         next(error);
     }
 }
@@ -137,7 +132,6 @@ async function deleteExperienceLevelController(req: AuthRequest, res: Response, 
             error: {}
         });
     } catch (error) {
-        logger.error('experienceLevel.controller/deleteExperienceLevelController', error);
         next(error);
     }
 }
