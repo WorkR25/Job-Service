@@ -39,142 +39,130 @@ class JobService {
     async getJobDetailsById(getJobDetails: GetJobDetailsDto) {
         const { id } = getJobDetails;
 
-        try {
-            const checkJob = await this.jobRepository.findById(id);
-            if (!checkJob) {
-                throw new NotFoundError('Job not found');
-            }
-
-            if(checkJob.deleted_at != null) {
-                throw new BadRequestError('This Job is no longer exists');
-            }
-
-            const city = await getCityById(checkJob.location_id);
-            const data = await this.jobRepository.getJobDetails(Number(id));
-            const skillIds = await this.jobSkillRepository.findSkillByJobId(id);
-
-            const skills = await Promise.all(
-                skillIds.map(async (skillId) => {
-                    const skill = await getSkillById(skillId.skill_id);
-                    return { id: skillId.skill_id, name: skill.data.data.name };
-                })
-            );
-
-            const response = {
-                ...data?.toJSON(),
-                city: { name: city.data.data.name },
-                skills,
-            };
-
-            return response;
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error fetching job details');
+        const checkJob = await this.jobRepository.findById(id);
+        if (!checkJob) {
+            const error = new NotFoundError('Job not found');
+            logger.error('job.service/getJobDetailsById', { error, id });
+            throw error;
         }
+
+        if(checkJob.deleted_at != null) {
+            const error = new BadRequestError('This Job is no longer exists');
+            logger.error('job.service/getJobDetailsById', { error, id });
+            throw error;
+        }
+
+        const city = await getCityById(checkJob.location_id);
+        const data = await this.jobRepository.getJobDetails(Number(id));
+        const skillIds = await this.jobSkillRepository.findSkillByJobId(id);
+
+        const skills = await Promise.all(
+            skillIds.map(async (skillId) => {
+                const skill = await getSkillById(skillId.skill_id);
+                return { id: skillId.skill_id, name: skill.data.data.name };
+            })
+        );
+
+        const response = {
+            ...data?.toJSON(),
+            city: { name: city.data.data.name },
+            skills,
+        };
+
+        return response;
     }
 
     async getAllJobsServicePagination(getAllJobData: GetAllJobsPagination) {
         const { page = 1, limit = 10 } = getAllJobData;
-        try {
-            // return true ;
-            const offset = (page - 1) * limit;
 
-            const { rows: jobs, count: totalCount } = await this.jobRepository.findAndCountAll({ limit, offset });
-            const response = await Promise.all(
-                jobs.map(async (job) => {
-                    const locationRes = await getLocationById(job.location_id);
-                    const location = locationRes?.data?.data;
+        const offset = (page - 1) * limit;
 
-                    const city = location?.name ?? null;
-                    const state = location?.state?.name ?? null;
-                    const country = location?.state?.country?.name ?? null;
+        const { rows: jobs, count: totalCount } = await this.jobRepository.findAndCountAll({ limit, offset });
+        const response = await Promise.all(
+            jobs.map(async (job) => {
+                const locationRes = await getLocationById(job.location_id);
+                const location = locationRes?.data?.data;
 
-                    const skillIds = await this.jobSkillRepository.findSkillByJobId(job.id);
+                const city = location?.name ?? null;
+                const state = location?.state?.name ?? null;
+                const country = location?.state?.country?.name ?? null;
 
-                    let skills: string[] = [];
+                const skillIds = await this.jobSkillRepository.findSkillByJobId(job.id);
 
-                    if (skillIds.length > 0) {
-                        skills = await Promise.all(
-                            skillIds.map(async (skillId) => {
-                                const skillRes = await getSkillById(skillId.skill_id);
-                                return skillRes?.data?.data?.name ?? null;
-                            })
-                        );
-                    }
+                let skills: string[] = [];
 
-                    return {
-                        ...job.get({ plain: true }),
-                        city,
-                        state,
-                        country,
-                        skills,
-                    };
-                })
-            );
-            const totalPages = Math.ceil(totalCount / limit);
+                if (skillIds.length > 0) {
+                    skills = await Promise.all(
+                        skillIds.map(async (skillId) => {
+                            const skillRes = await getSkillById(skillId.skill_id);
+                            return skillRes?.data?.data?.name ?? null;
+                        })
+                    );
+                }
 
-            return {
-                records: response,
-                pagination: {
-                    totalCount,
-                    totalPages,
-                    currentPage: page,
-                    limit,
-                },
-            };
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error fetching paginated jobs');
-        }
+                return {
+                    ...job.get({ plain: true }),
+                    city,
+                    state,
+                    country,
+                    skills,
+                };
+            })
+        );
+        const totalPages = Math.ceil(totalCount / limit);
+
+        return {
+            records: response,
+            pagination: {
+                totalCount,
+                totalPages,
+                currentPage: page,
+                limit,
+            },
+        };
     }
 
     async getAllJobsService(getAllJobData: GetAllJobDto) {
         const {  } = getAllJobData;
-        try {
-            const record = await this.jobRepository.findAll();
-            const response = await Promise.all(
-                record.map(async (job) => {
-                    const location = await getLocationById(job.location_id);
-                    const skillIds = await this.jobSkillRepository.findSkillByJobId(
-                        job.id
-                    );
+        const record = await this.jobRepository.findAll();
+        const response = await Promise.all(
+            record.map(async (job) => {
+                const location = await getLocationById(job.location_id);
+                const skillIds = await this.jobSkillRepository.findSkillByJobId(
+                    job.id
+                );
 
-                    if (skillIds.length === 0) {
-                        return {
-                            ...job.toJSON(),
-                            city: location.data.data.name,
-                            state: location.data.data.state.name,
-                            country: location.data.data.state.country.name,
-                        };
-                    }
-
-                    const skills = await Promise.all(
-                        skillIds.map(async (skillId) => {
-                            const skill = await getSkillById(skillId.skill_id);
-                            return skill.data.data.name;
-                        })
-                    );
-
+                if (skillIds.length === 0) {
                     return {
                         ...job.toJSON(),
                         city: location.data.data.name,
                         state: location.data.data.state.name,
                         country: location.data.data.state.country.name,
-                        skills,
                     };
-                })
-            );
+                }
 
-            return response;
-        } catch (error) {
-            logger.error(error);
-            throw new InternalServerError('Error fetching jobs');
-        }
+                const skills = await Promise.all(
+                    skillIds.map(async (skillId) => {
+                        const skill = await getSkillById(skillId.skill_id);
+                        return skill.data.data.name;
+                    })
+                );
+
+                return {
+                    ...job.toJSON(),
+                    city: location.data.data.name,
+                    state: location.data.data.state.name,
+                    country: location.data.data.state.country.name,
+                    skills,
+                };
+            })
+        );
+
+        return response;
     }
 
     async createJobService(createJobData: CreateJobDto) {
         const { userId, jwtToken, skillIds, ...rest } = createJobData;
-        // await isAuthorized(userId, jwtToken);
         await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
         
         const transaction = await sequelize.transaction();
@@ -206,13 +194,13 @@ class JobService {
     async deleteJobService(deleteJobData: DeleteJobDto) {
         const { userId, jwtToken, id } = deleteJobData;
 
-        // await isAuthorized(userId, jwtToken);
         await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
-
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
-            throw new BadRequestError('Job does not exist');
+            const error = new BadRequestError('Job does not exist');
+            logger.error('job.service/deleteJobService', { error, id });
+            throw error;
         }
 
         const transaction = await sequelize.transaction();
@@ -235,13 +223,13 @@ class JobService {
 
     async updateJobService(updateJobData: UpdateJobDto) {
         const { userId, jwtToken, id, skillIds, ...rest } = updateJobData;
-        // await isAuthorized(userId, jwtToken);
         await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
-
 
         const checkJob = await this.jobRepository.findById(id);
         if (!checkJob) {
-            throw new BadRequestError('Job does not exist');
+            const error = new BadRequestError('Job does not exist');
+            logger.error('job.service/updateJobService', { error, id });
+            throw error;
         }
 
         const skillIdResponse = await this.jobSkillRepository.findSkillByJobId(
@@ -281,8 +269,8 @@ class JobService {
                 skillIds,
             };
         } catch (error) {
-            logger.error(error);
             await transaction.rollback();
+            logger.error(error);
             throw new InternalServerError('Error updating job details');
         }
     }

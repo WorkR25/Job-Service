@@ -14,17 +14,6 @@ async function getJobTitle(req: AuthRequest, res: Response, next: NextFunction){
         const userId = req.user?.id ;
         const jwtToken = req.headers.authorization;
 
-        // if(!title){
-        //     res.status(StatusCodes.BAD_REQUEST).json({
-        //         success: false,
-        //         message: 'No job title',
-        //         data: {},
-        //         error: {
-        //             message: 'Bad Request'
-        //         }
-        //     });
-        // }
-
         const getData= {
             title: String(title),
             userId: Number(userId),

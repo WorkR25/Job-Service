@@ -5,7 +5,6 @@ import ApplicationRepository from '../repository/application.repository';
 import ApplicationService from '../services/application.service';
 import { AuthRequest } from '../types/AuthRequest';
 import { isAuthorized } from '../utils/services/AuthorizationService';
-// import { isAuthorized } from '../utils/services/AuthorizationService';
 
 const applicationRepository= new ApplicationRepository();
 const applicationService= new ApplicationService(applicationRepository);
@@ -16,16 +15,6 @@ async function createApplication(req: AuthRequest, res: Response, next: NextFunc
         const { jobId } = req.body;
         const jwtToken= String(req.headers.authorization);
 
-        // const record= await applicationService.getApplicationDetailsService({userId, jobId, jwtToken});
-        // if(record.length> 0){
-        //     res.status(StatusCodes.OK).json({
-        //         success: true,
-        //         message: 'Already applied for this Job',
-        //         data: record,
-        //         error: {}
-        //     });
-        // }
-        
         const response= await applicationService.createApplicationService({userId, jobId: Number(jobId), jwtToken});
         res.status(StatusCodes.OK).json({
             success: true,
@@ -43,7 +32,6 @@ async function deleteApplication(req: AuthRequest, res: Response, next: NextFunc
         const userId= Number(req.user?.id);
         const jobId= Number(req.params.id);
         const jwtToken= String(req.headers.authorization);
-
 
         const response= await applicationService.deleteApplicationService({userId, jobId, jwtToken});
         res.status(StatusCodes.OK).json({

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
+import logger from '../configs/logger.config';
 import CompanyRepository from '../repository/company.repository';
 import CompanyService from '../services/company.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -12,7 +13,9 @@ const companyService = new CompanyService(companyRepository);
 async function uploadLogoHandler(req: Request, res: Response, next: NextFunction){
     try {
         if(!req.file){
-            throw new BadRequestError('No profile pic');
+            const error = new BadRequestError('No profile pic');
+            logger.error('company.controller/uploadLogoHandler', { error });
+            throw error;
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const fileUrl = (req.file as any).location;
@@ -144,7 +147,23 @@ async function getAllCompanies(req: AuthRequest, res: Response, next: NextFuncti
     }
 }
 
+async function findCompanyByName(req: AuthRequest, res: Response, next: NextFunction){
+    try {    
+        const name= String(req.query.name) ;
+        const response = await companyService.findCompanyByNameService({ name });
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Details fetched successfully',
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
+    findCompanyByName,
     uploadLogoHandler,
     getCompanyDetailsById,
     createComapany,
