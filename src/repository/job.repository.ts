@@ -134,6 +134,12 @@ class JobRepository extends BaseRepository<Job> {
         return records;
     }
 
+    async findByApplyLink(applyLink: string): Promise<Job | null> {
+        return await this.model.findOne({
+            where: { apply_link: applyLink }
+        });
+    }
+
     async getJobDetails(id: number) {
         const response = await this.model.findByPk(id, {
             attributes: [
