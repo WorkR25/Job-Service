@@ -69,7 +69,7 @@ class JobTitleService {
 
     async findJobTitleService(findData: FindJobTitleDto) {
         const { userId, jwtToken, title } = findData;
-        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['admin']});
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
 
         const record = await this.jobTitleRepository.findByExactTitle(title);
         return record ;
