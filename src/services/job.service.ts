@@ -1,3 +1,5 @@
+import { UniqueConstraintError } from 'sequelize';
+
 import logger from '../configs/logger.config';
 import sequelize from '../db/models/sequelize';
 import {
@@ -13,6 +15,7 @@ import JobRepository from '../repository/job.repository';
 import JobSkillRepository from '../repository/jobSkill.repository';
 import {
     BadRequestError,
+    ConflictError,
     InternalServerError,
     NotFoundError,
 } from '../utils/errors/app.error';
@@ -187,6 +190,11 @@ class JobService {
         } catch (error) {
             logger.error(error);
             await transaction.rollback();
+
+            if(error instanceof UniqueConstraintError) {
+                throw new ConflictError(error.errors[0].message);
+            }
+            
             throw new InternalServerError('Error creating job');
         }
     }
