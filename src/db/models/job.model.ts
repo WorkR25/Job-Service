@@ -94,7 +94,10 @@ Job.init({
     apply_link: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
+        unique: {
+            name: 'unique_apply_link',
+            msg: 'A job with this application link already exists'
+        },
     },
     description:{
         type: DataTypes.TEXT,

@@ -1,3 +1,5 @@
+import { UniqueConstraintError } from 'sequelize';
+
 import logger from '../configs/logger.config';
 import sequelize from '../db/models/sequelize';
 import {
@@ -195,6 +197,11 @@ class JobService {
         } catch (error) {
             logger.error(error);
             await transaction.rollback();
+
+            if(error instanceof UniqueConstraintError) {
+                throw new ConflictError(error.errors[0].message);
+            }
+            
             throw new InternalServerError('Error creating job');
         }
     }
