@@ -104,8 +104,33 @@ async function createJobTitle(req: AuthRequest, res: Response, next: NextFunctio
     }
 }
 
+async function findJobTitle(req: AuthRequest, res: Response, next: NextFunction){
+    try {
+        const title = req.query.name ;
+        const userId = req.user?.id ;
+        const jwtToken = req.headers.authorization;
+
+        const findData= {
+            title: String(title),
+            userId: Number(userId),
+            jwtToken: String(jwtToken)
+        };
+
+        const response = await jobTitleService.findJobTitleService(findData);
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Job title found successfully',
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
     getJobTitle,
+    findJobTitle,
     deleteJobTitle,
     updateJobTitle,
     createJobTitle,

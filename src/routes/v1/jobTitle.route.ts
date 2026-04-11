@@ -8,6 +8,7 @@ import { CreateJobTitleSchema, DeleteJobTitleSchema, UpdateJobTitleSchema } from
 const jobTitleRouter = Router();
 
 jobTitleRouter.get('/', authenticationMiddleware, jobTitleController.getJobTitle );
+jobTitleRouter.get('/find-title', authenticationMiddleware, jobTitleController.findJobTitle);
 jobTitleRouter.delete('/', authenticationMiddleware, validateRequestBody(DeleteJobTitleSchema), jobTitleController.deleteJobTitle );
 jobTitleRouter.put('/', authenticationMiddleware, validateRequestBody(UpdateJobTitleSchema), jobTitleController.updateJobTitle );
 jobTitleRouter.post('/', authenticationMiddleware, validateRequestBody(CreateJobTitleSchema), jobTitleController.createJobTitle);
