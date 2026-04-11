@@ -1,7 +1,7 @@
-import logger from '../configs/logger.config';
+// import logger from '../configs/logger.config';
 import { CreateCompanyDto, DeleteCompanyDto, UpdateCompanyDto } from '../dtos/company.dto';
 import CompanyRepository from '../repository/company.repository';
-import { BadRequestError } from '../utils/errors/app.error';
+// import { BadRequestError } from '../utils/errors/app.error';
 import { isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 
 class CompanyService {
@@ -36,12 +36,12 @@ class CompanyService {
         const { userId, jwtToken, name, ...rest } = createData;
         await isAuthorizedGeneric({ userId, jwtToken, allowedRoles: ['operations_admin', 'admin'] });
 
-        const checkCompany = await this.companyRepository.findByName(name);
-        if (checkCompany) {
-            const error = new BadRequestError('Company already exists');
-            logger.error('company.service/createCompany', { error, name });
-            throw error;
-        }
+        // const checkCompany = await this.companyRepository.findByName(name);
+        // if (checkCompany) {
+        //     const error = new BadRequestError('Company already exists');
+        //     logger.error('company.service/createCompany', { error, name });
+        //     throw error;
+        // }
         const companyRecord = await this.companyRepository.create({ name, ...rest });
         return { companyRecord };
     }
