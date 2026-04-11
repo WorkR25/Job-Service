@@ -70,7 +70,7 @@ Company.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: { model: CompanySize, key: 'id' },
-            onDelete: 'RESTRICT',
+            onDelete: 'CASCADE',
             onUpdate: 'CASCADE',
         },
 
@@ -78,7 +78,7 @@ Company.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             references: { model: Industry, key: 'id' },
-            onDelete: 'RESTRICT',
+            onDelete: 'CASCADE',
             onUpdate: 'CASCADE',
         },
         created_at: { 
