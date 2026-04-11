@@ -9,6 +9,24 @@ abstract class BaseRepository<M extends Model> {
         this.model = model;
     }
 
+    async findOne(whereOptions: WhereOptions<M>): Promise<M | null> {
+        const record = await this.model.findOne({
+            where: {
+                ...whereOptions
+            }
+        });
+        return record;
+    }
+
+    async findAllWhere(whereOptions: WhereOptions<M>): Promise<M[]> {
+        const records = await this.model.findAll({
+            where: {
+                ...whereOptions
+            }
+        });
+        return records;
+    }
+
     async create(data: CreationAttributes<M>): Promise<M> {
         const record = await this.model.create(data);
         return record;

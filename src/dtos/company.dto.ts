@@ -3,10 +3,10 @@ export type CreateCompanyDto= {
     jwtToken: string;
     name: string;
     logo: string;
-    website?: string;
-    description?: string;
-    company_size_id?: number;
-    industry_id?:number;
+    website: string;
+    description: string;
+    company_size_id: number;
+    industry_id:number;
 }
 
 
