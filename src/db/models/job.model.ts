@@ -85,7 +85,7 @@ Job.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: Company, key: 'id' },
-        onDelete: 'SET NULL',
+        onDelete: 'RESTRICT',
         onUpdate: 'CASCADE',
     },
 
