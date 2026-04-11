@@ -34,6 +34,7 @@ export type CreateJobDto= {
     location_id: number;
     apply_link: string;
     skillIds: number[];
+    description: string;
 }
 
 export type DeleteJobDto= {

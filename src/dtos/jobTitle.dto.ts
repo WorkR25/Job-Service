@@ -22,3 +22,9 @@ export type CreateJobTitleDto={
     userId: number;
     jwtToken: string;
 }
+
+export type FindJobTitleDto={
+    title: string;
+    userId: number;
+    jwtToken: string;
+}

@@ -7,7 +7,7 @@ import logger from './configs/logger.config';
 import { frontendConfig, serverConfig } from './configs/server.config';
 import sequelize from './db/models/sequelize';
 import { attachCorrelationIdMiddleware } from './middlewares/correlation.middleware';
-import { appErrorHandler, genericErrorHandler } from './middlewares/error.middleware';
+import { appErrorHandler, genericErrorHandler, sequelizeErrorHandler } from './middlewares/error.middleware';
 import apiRouter from './routes';
 
 const app = express();
@@ -29,6 +29,7 @@ app.get('/health', (_req, res) => {
     });
 });
 
+app.use(sequelizeErrorHandler);
 app.use(appErrorHandler);
 app.use(genericErrorHandler);
 
