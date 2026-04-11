@@ -2,6 +2,7 @@ import logger from '../configs/logger.config';
 import { 
     CreateJobTitleDto, 
     DeleteJobTitleDto, 
+    FindJobTitleDto, 
     GetJobTitleDto, 
     UpdateJobTitleDto 
 } from '../dtos/jobTitle.dto';
@@ -64,6 +65,14 @@ class JobTitleService {
         }
 
         return await this.jobTitleRepository.create({ title });
+    }
+
+    async findJobTitleService(findData: FindJobTitleDto) {
+        const { userId, jwtToken, title } = findData;
+        await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['admin']});
+
+        const record = await this.jobTitleRepository.findByExactTitle(title);
+        return record ;
     }
 }
 

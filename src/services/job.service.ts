@@ -168,6 +168,13 @@ class JobService {
         const { userId, jwtToken, skillIds, ...rest } = createJobData;
         await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
         
+        const existingJob = await this.jobRepository.findByApplyLink(rest.apply_link);
+        if (existingJob) {
+            const error = new ConflictError('A job with this apply link already exists');
+            logger.error('job.service/createJobService', { error, apply_link: rest.apply_link });
+            throw error;
+        }
+
         const transaction = await sequelize.transaction();
         try {
             const jobRecord = await this.jobRepository.create(
