@@ -50,7 +50,6 @@ Company.init(
         logo: {
             type: DataTypes.STRING,
             allowNull: false,
-            validate: { isUrl: true },
         },
 
         website: {
@@ -100,8 +99,6 @@ Company.init(
         sequelize,
         underscored: true,
         timestamps: true,
-        paranoid: true,
-        deletedAt: 'deleted_at',
     }
 );
 
