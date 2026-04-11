@@ -25,45 +25,45 @@ export const genericErrorHandler = (error: Error, _req: Request, res: Response, 
     });
 };
 
-export const sequelizeErrorHandler = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
-    logger.error('Sequelize error handler',error);
+export const sequelizeErrorHandler = (error: Error, _req: Request, res: Response, next: NextFunction) => {
+    logger.error('Sequelize error handler', error);
 
-    if (error instanceof ValidationError) {
-        console.log(error.errors[0].message);
-        res.status(StatusCodes.BAD_REQUEST).json({
-            success: false,
-            message: error.errors[0].message,
-            data: {},
-            error
-        });
-    } else if (error instanceof UniqueConstraintError) {
+    if (error instanceof UniqueConstraintError) {           
         res.status(StatusCodes.CONFLICT).json({
             success: false,
             message: error.errors[0].message,
             data: {},
-            error
+            error: error.message
         });
-    } else if (error instanceof DatabaseError) {
-        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            success: false,
-            message: error.message,
-            data: {},
-            error
-        });
-    } else if ( error instanceof ForeignKeyConstraintError ) {
+    } else if (error instanceof ValidationError) {
         res.status(StatusCodes.BAD_REQUEST).json({
             success: false,
-            message: error.message,
+            message: error.errors[0].message,
             data: {},
-            error
+            error: error.message
+        });
+    } else if (error instanceof ForeignKeyConstraintError) {
+        res.status(StatusCodes.BAD_REQUEST).json({
+            success: false,
+            message: 'Invalid reference: related resource does not exist.',  
+            data: {},
+            error: error.message
         });
     } else if (error instanceof TimeoutError) {
         res.status(StatusCodes.SERVICE_UNAVAILABLE).json({
             success: false,
-            message: error.message,
+            message: 'Service temporarily unavailable. Please try again.',
             data: {},
-            error
+            error: error.message
         });
-        return;
+    } else if (error instanceof DatabaseError) {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: 'Something went wrong!',
+            data: {},
+            error: error.message
+        });
+    } else {
+        next(error);                                        
     }
 };
