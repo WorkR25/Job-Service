@@ -1,4 +1,4 @@
-import { UniqueConstraintError } from 'sequelize';
+// import { UniqueConstraintError } from 'sequelize';
 
 import logger from '../configs/logger.config';
 import sequelize from '../db/models/sequelize';
@@ -15,7 +15,7 @@ import JobRepository from '../repository/job.repository';
 import JobSkillRepository from '../repository/jobSkill.repository';
 import {
     BadRequestError,
-    ConflictError,
+    // ConflictError,
     InternalServerError,
     NotFoundError,
 } from '../utils/errors/app.error';
@@ -168,12 +168,12 @@ class JobService {
         const { userId, jwtToken, skillIds, ...rest } = createJobData;
         await isAuthorizedGeneric({jwtToken, userId, allowedRoles: ['operations_admin', 'admin']});
         
-        const existingJob = await this.jobRepository.findByApplyLink(rest.apply_link);
-        if (existingJob) {
-            const error = new ConflictError('A job with this apply link already exists');
-            logger.error('job.service/createJobService', { error, apply_link: rest.apply_link });
-            throw error;
-        }
+        // const existingJob = await this.jobRepository.findByApplyLink(rest.apply_link);
+        // if (existingJob) {
+        //     const error = new ConflictError('A job with this apply link already exists');
+        //     logger.error('job.service/createJobService', { error, apply_link: rest.apply_link });
+        //     throw error;
+        // }
 
         const transaction = await sequelize.transaction();
         try {
@@ -198,11 +198,12 @@ class JobService {
             logger.error(error);
             await transaction.rollback();
 
-            if(error instanceof UniqueConstraintError) {
-                throw new ConflictError(error.errors[0].message);
-            }
+            // if(error instanceof UniqueConstraintError) {
+            //     throw new ConflictError(error.errors[0].message);
+            // }
             
-            throw new InternalServerError('Error creating job');
+            // throw new InternalServerError('Error creating job');
+            throw error;
         }
     }
 
