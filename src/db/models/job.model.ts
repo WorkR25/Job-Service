@@ -46,7 +46,7 @@ Job.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: JobTitle, key: 'id' },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     },
 
@@ -54,7 +54,7 @@ Job.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: EmploymentType, key: 'id' },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     },
 
@@ -62,7 +62,7 @@ Job.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: ExperienceLevel, key: 'id' },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     },
 
@@ -85,7 +85,7 @@ Job.init({
         type: DataTypes.INTEGER,
         allowNull: false,
         references: { model: Company, key: 'id' },
-        onDelete: 'RESTRICT',
+        onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
     },
 

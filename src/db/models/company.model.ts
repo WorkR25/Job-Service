@@ -16,8 +16,8 @@ class Company extends Model<InferAttributes<Company>,InferCreationAttributes<Com
     declare id: CreationOptional<number>;
     declare name: string;
     declare logo: string;
-    declare website: CreationOptional<string>;
-    declare description: CreationOptional<string>;
+    declare website: string;
+    declare description: string;
     declare company_size_id: ForeignKey<CompanySize['id']>;
     declare industry_id: ForeignKey<Industry['id']>;
     declare created_at: CreationOptional<Date>;
@@ -37,36 +37,53 @@ Company.init(
             autoIncrement: true,
             primaryKey: true,
         },
+
         name: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true,
+            unique: {
+                name: 'unique_company_name',
+                msg: 'Company with this name already exists',
+            },
         },
-        logo:{
+
+        logo: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
+
         website: {
             type: DataTypes.STRING,
-            allowNull: true,
-            unique: true,
+            allowNull: false,
+            unique: {
+                name: 'unique_website',
+                msg: 'Company with this website already exists',
+            },
         },
-        description:{
+
+        description: {
             type: DataTypes.TEXT,
-            allowNull: true
+            allowNull: false,
         },
-        company_size_id:{
-            type: DataTypes.NUMBER,
-            allowNull: true
+
+        company_size_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: CompanySize, key: 'id' },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         },
-        industry_id:{
-            type: DataTypes.NUMBER,
-            allowNull: true
+
+        industry_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: { model: Industry, key: 'id' },
+            onDelete: 'CASCADE',
+            onUpdate: 'CASCADE',
         },
-        created_at: {
+        created_at: { 
             type: DataTypes.DATE,
             allowNull: true,
-            unique: true,
         },
         updated_at: {
             type: DataTypes.DATE,
@@ -81,7 +98,7 @@ Company.init(
         tableName: 'companies',
         sequelize,
         underscored: true,
-        timestamps: false,
+        timestamps: true,
     }
 );
 
