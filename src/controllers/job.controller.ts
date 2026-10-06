@@ -2,7 +2,7 @@ import { NextFunction, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
 import CompanyCityRepository from '../repository/companyCity.repository';
-import JobRepository from '../repository/job.repository';
+import JobRepository, { JOB_LIST_TABS, JobListTab } from '../repository/job.repository';
 import JobSkillRepository from '../repository/jobSkill.repository';
 import JobService from '../services/job.service';
 import { AuthRequest } from '../types/AuthRequest';
@@ -131,9 +131,23 @@ async function getAllJobsPagination(req: AuthRequest, res: Response, next: NextF
     try {
         const jwtToken = String( req.headers.authorization );
         const userId = Number( req.user?.id );
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 10;
-        const response = await jobService.getAllJobsServicePagination({jwtToken, limit: Number(limit), page: Number(page), userId});
+        const page = Math.max(parseInt(req.query.page as string) || 1, 1);
+        const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 10, 1), 50);
+        const company = typeof req.query.company === 'string' ? req.query.company.trim().slice(0, 100) : '';
+        const companyId = parseInt(req.query.companyId as string) || undefined;
+        const tabParam = String(req.query.tab ?? 'all');
+        const tab: JobListTab = (JOB_LIST_TABS as readonly string[]).includes(tabParam) ? (tabParam as JobListTab) : 'all';
+        const includeCounts = req.query.counts === 'true';
+        const response = await jobService.getAllJobsServicePagination({
+            jwtToken,
+            limit,
+            page,
+            userId,
+            company: company || undefined,
+            companyId,
+            tab,
+            includeCounts,
+        });
         res.status(StatusCodes.OK).json({
             success: true,
             message: 'Paginated Jobs fetched successfully',
@@ -145,8 +159,24 @@ async function getAllJobsPagination(req: AuthRequest, res: Response, next: NextF
     }
 }
 
+async function getHiringCompanies(req: AuthRequest, res: Response, next: NextFunction){
+    try {
+        const name = typeof req.query.name === 'string' ? req.query.name.trim().slice(0, 100) : '';
+        const limit = Math.min(Math.max(parseInt(req.query.limit as string) || 8, 1), 20);
+        const response = await jobService.getHiringCompaniesService({ name: name || undefined, limit });
+        res.status(StatusCodes.OK).json({
+            success: true,
+            message: 'Hiring companies fetched successfully',
+            data: response,
+            error: {}
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 export default {
-    
+    getHiringCompanies,
     createJob,
     deleteJob,
     updateJob,

@@ -10,8 +10,9 @@ import {
     GetJobDetailsDto,
     UpdateJobDto,
 } from '../dtos/job.dto';
+import CompanyRepository from '../repository/company.repository';
 import CompanyCityRepository from '../repository/companyCity.repository';
-import JobRepository from '../repository/job.repository';
+import JobRepository, { JobListFilters } from '../repository/job.repository';
 import JobSkillRepository from '../repository/jobSkill.repository';
 import {
     BadRequestError,
@@ -21,7 +22,7 @@ import {
 } from '../utils/errors/app.error';
 import { isAuthorizedGeneric } from '../utils/services/AuthorizationService';
 import { getCityById } from '../utils/services/CityService';
-import { getLocationById } from '../utils/services/LocationService';
+import { getLocationById, getRemoteLocationIds } from '../utils/services/LocationService';
 import { getSkillById } from '../utils/services/SkillService';
 
 class JobService {
@@ -76,11 +77,22 @@ class JobService {
     }
 
     async getAllJobsServicePagination(getAllJobData: GetAllJobsPagination) {
-        const { page = 1, limit = 10 } = getAllJobData;
+        const { page = 1, limit = 10, company, companyId, tab = 'all', includeCounts = false } = getAllJobData;
 
         const offset = (page - 1) * limit;
 
-        const { rows: jobs, count: totalCount } = await this.jobRepository.findAndCountAll({ limit, offset });
+        const needsRemoteIds = tab === 'remote' || tab === 'onsite' || includeCounts;
+        const filters: JobListFilters = {
+            companyName: company,
+            companyId,
+            tab,
+            remoteLocationIds: needsRemoteIds ? await getRemoteLocationIds() : [],
+        };
+
+        const [{ rows: jobs, count: totalCount }, counts] = await Promise.all([
+            this.jobRepository.findAndCountAll({ limit, offset, filters }),
+            includeCounts ? this.jobRepository.countByTab(filters) : Promise.resolve(undefined),
+        ]);
         const response = await Promise.all(
             jobs.map(async (job) => {
                 const locationRes = await getLocationById(job.location_id);
@@ -108,6 +120,7 @@ class JobService {
                     city,
                     state,
                     country,
+                    is_remote: city?.trim().toLowerCase() === 'remote',
                     skills,
                 };
             })
@@ -122,7 +135,12 @@ class JobService {
                 currentPage: page,
                 limit,
             },
+            ...(counts ? { counts } : {}),
         };
+    }
+
+    async getHiringCompaniesService({ name, limit }: { name?: string; limit: number }) {
+        return await new CompanyRepository().findHiringCompanies({ name, limit });
     }
 
     async getAllJobsService(getAllJobData: GetAllJobDto) {

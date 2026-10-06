@@ -1,3 +1,5 @@
+import { JobListTab } from '../repository/job.repository';
+
 export type GetJobDetailsDto= {
     id: number;
 }
@@ -64,4 +66,8 @@ export type GetAllJobsPagination= {
     jwtToken: string;
     page: number;
     limit: number;
+    company?: string;
+    companyId?: number;
+    tab?: JobListTab;
+    includeCounts?: boolean;
 }

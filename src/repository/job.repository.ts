@@ -1,4 +1,5 @@
 import {
+    IncludeOptions,
     InferCreationAttributes,
     Op,
     Optional,
@@ -11,6 +12,22 @@ import Company from '../db/models/company.model';
 import Job from '../db/models/job.model';
 import { NotFoundError } from '../utils/errors/app.error';
 import BaseRepository from './base.repository';
+
+export const JOB_LIST_TABS = ['all', 'new', 'remote', 'onsite', 'intern'] as const;
+export type JobListTab = (typeof JOB_LIST_TABS)[number];
+
+export type JobListFilters = {
+    companyName?: string;
+    companyId?: number;
+    tab?: JobListTab;
+    remoteLocationIds?: number[];
+};
+
+const NEW_JOB_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function escapeLike(value: string) {
+    return value.replace(/[\\%_]/g, (char) => `\\${char}`);
+}
 
 class JobRepository extends BaseRepository<Job> {
     constructor() {
@@ -64,13 +81,62 @@ class JobRepository extends BaseRepository<Job> {
         return record;
     }
 
+    private buildListQuery(filters: JobListFilters, tab: JobListTab) {
+        const conditions: WhereOptions<Job>[] = [{ deleted_at: { [Op.eq]: null } }];
+        const remoteIds = filters.remoteLocationIds ?? [];
+
+        if (filters.companyId) {
+            conditions.push({ company_id: filters.companyId });
+        }
+        if (tab === 'new') {
+            conditions.push({ created_at: { [Op.gte]: new Date(Date.now() - NEW_JOB_WINDOW_MS) } });
+        }
+        if (tab === 'remote') {
+            // No "Remote" location configured means no remote jobs.
+            conditions.push({ location_id: { [Op.in]: remoteIds.length ? remoteIds : [-1] } });
+        }
+        if (tab === 'onsite' && remoteIds.length) {
+            conditions.push({ location_id: { [Op.notIn]: remoteIds } });
+        }
+
+        const companyInclude: IncludeOptions = {
+            association: Job.associations.company,
+            attributes: ['id', 'name', 'logo'],
+        };
+        if (filters.companyName) {
+            companyInclude.where = { name: { [Op.like]: `%${escapeLike(filters.companyName)}%` } };
+            companyInclude.required = true;
+        }
+
+        const employmentTypeInclude: IncludeOptions = {
+            association: Job.associations.employmentType,
+            attributes: ['name'],
+        };
+        if (tab === 'intern') {
+            employmentTypeInclude.where = { name: { [Op.like]: 'intern%' } };
+            employmentTypeInclude.required = true;
+        }
+
+        return {
+            where: { [Op.and]: conditions },
+            include: [
+                { association: Job.associations.jobTitle, attributes: ['title'] },
+                companyInclude,
+                employmentTypeInclude,
+            ],
+        };
+    }
+
     async findAndCountAll({
         limit,
         offset,
+        filters = {},
     }: {
     limit: number;
     offset: number;
+    filters?: JobListFilters;
   }) {
+        const { where, include } = this.buildListQuery(filters, filters.tab ?? 'all');
         const records = await this.model.findAndCountAll({
             attributes: [
                 'created_at',
@@ -80,28 +146,27 @@ class JobRepository extends BaseRepository<Job> {
                 'salary_max',
                 'apply_link',
             ],
-            include: [
-                {
-                    association: Job.associations.jobTitle,
-                    attributes: ['title'],
-                },
-                {
-                    association: Job.associations.company,
-                    attributes: ['name', 'logo'],
-                },
-                {
-                    association: Job.associations.employmentType,
-                    attributes: ['name'],
-                }
-            ],
-            where: {
-                deleted_at: { [Op.eq]: null },
-            },
+            include,
+            where,
+            distinct: true,
             order: [['created_at', 'DESC']],
             limit,
             offset,
         });
         return records;
+    }
+
+    async countByTab(filters: JobListFilters): Promise<Record<JobListTab, number>> {
+        const counts = await Promise.all(
+            JOB_LIST_TABS.map((tab) => {
+                const { where, include } = this.buildListQuery(filters, tab);
+                return this.model.count({ where, include, distinct: true, col: 'id' });
+            })
+        );
+        return JOB_LIST_TABS.reduce((acc, tab, index) => {
+            acc[tab] = counts[index];
+            return acc;
+        }, {} as Record<JobListTab, number>);
     }
 
     async findAll(): Promise<Job[]> {
@@ -143,6 +208,8 @@ class JobRepository extends BaseRepository<Job> {
     async getJobDetails(id: number) {
         const response = await this.model.findByPk(id, {
             attributes: [
+                'id',
+                'location_id',
                 'salary_min',
                 'salary_max',
                 'apply_link',
@@ -160,7 +227,7 @@ class JobRepository extends BaseRepository<Job> {
                 },
                 {
                     association: Job.associations.company,
-                    attributes: ['name', 'logo', 'description', 'website'],
+                    attributes: ['id', 'name', 'logo', 'description', 'website'],
                     include: [
                         {
                             association: Company.associations.companySize,
