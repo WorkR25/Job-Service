@@ -117,6 +117,7 @@ class ApplicationService {
                 return {
                     candidate_id: plainRecord.candidate_id,
                     job_id: plainRecord.job_id,
+                    applied_at: plainRecord.applied_at ?? null,
                     ...userRecord.data,
                 };
             })
