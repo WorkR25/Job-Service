@@ -133,6 +133,61 @@ class ApplicationService {
             },
         };
     }
+
+    async getCandidateApplicationHistoryService({
+        userId,
+        jwtToken,
+        candidateId,
+        page,
+        limit,
+    }: {
+        userId: number;
+        jwtToken: string;
+        candidateId: number;
+        page: number;
+        limit: number;
+    }) {
+        await isAuthorized(userId, jwtToken);
+
+        const offset = (page - 1) * limit;
+
+        const { rows, count } =
+            await this.applicationRepository.getCandidateApplicationHistory(
+                candidateId,
+                limit,
+                offset
+            );
+
+        const applications = rows.map((record) => {
+            const item = record.get({ plain: true }) as any;
+
+            return {
+                application_id: item.id,
+                candidate_id: item.candidate_id,
+                job_id: item.job_id,
+                company_id: item.job?.company_id ?? null,
+                company_name: item.job?.company?.name ?? null,
+                company_logo: item.job?.company?.logo ?? null,
+                job_title: item.job?.jobTitle?.title ?? null,
+                applied_at: item.applied_at,
+            };
+        });
+
+        const totalPages = Math.ceil(count / limit);
+
+        return {
+            candidate_id: candidateId,
+            total_applications: count,
+            applications,
+            pagination: {
+                current_page: page,
+                limit,
+                total_pages: totalPages,
+                has_next_page: page < totalPages,
+                has_previous_page: page > 1,
+            },
+        };
+    }
 }
 
 export default ApplicationService;
