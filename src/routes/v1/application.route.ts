@@ -13,5 +13,8 @@ applicationRouter.get('/', authenticationMiddleware, applicationController.getAl
 applicationRouter.get('/job-id/:jobId', authenticationMiddleware, applicationController.getApplicationDetails);
 applicationRouter.get('/pages/job-id', authenticationMiddleware, applicationController.getApplicantsByJobIdPagination);
 applicationRouter.get('/user/', authenticationMiddleware, applicationController.getApplicationByUserId);
+applicationRouter.get('/candidate/:candidateId/history',authenticationMiddleware,applicationController.getCandidateApplicationHistoryPagination);
+
+
 
 export default applicationRouter ;
