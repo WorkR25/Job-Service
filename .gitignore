@@ -2,3 +2,6 @@
 node_modules/
 dist/
 logs/
+# deploy.sh state / previous build
+.deploy/
+dist.prev/
